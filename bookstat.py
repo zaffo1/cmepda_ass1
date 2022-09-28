@@ -43,27 +43,48 @@ def process(file_path):
     print(f'Opening input file {file_path}...')
     with open(file_path, 'r') as input_file:
         text = input_file.read()
-    print(text)
+    #print(text)
     print('Done.')
     #words = text.split()
     #print('Number of words in text file :', len(words))
     #char='A'
     #print(f'The character {char} occurs {text.count(char)} time(s)')
-    d = dict()
-    print(d)
+    
+    # d = dict()
+    # for c in text:
+    #     if c in d:
+    #         d[c] = d[c] + 1
+    #     else:
+    #        d[c] = 1
+    # print(d)
+    
+    ascii_dict = dict()
+    for i in range(128):
+      ascii_dict[chr(i)] = 0 #inizializzo dizionario a zero
+
     for c in text:
-        if c in d:
-            d[c] = d[c] + 1
-        else:
-           d[c] = 1
-    print(d)
- 
+      if c in ascii_dict:
+          ascii_dict[c] = ascii_dict[c]+1
+
+    print(ascii_dict)
+    
+    for c in ascii_dict.copy():
+      if 97 <= ord(c) <=122:
+        ascii_dict[f'{c}/{chr(ord(c)-32)}']=ascii_dict[c]+ascii_dict[chr(ord(c)-32)]
+
+    print(ascii_dict)
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Print some book statistics')
     parser.add_argument('infile', type=str, help='path to the input file')
+    parser.add_argument("--histo", help="show histogram of the frequences", action="store_true")
     args = parser.parse_args()
+
     process(args.infile)
+
+    if args.histo:
+      print("print histogram")
 
     elapsed_time = time.time() - start_time
     print(f'Elapsed time: {elapsed_time} seconds') #prints execution time% (time.time() - start_time)
