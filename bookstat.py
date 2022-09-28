@@ -32,8 +32,11 @@ book.
   stats (e.g., number of characters, number of words, number of lines, etc.)
 """
 
+import re
 import time
 import argparse
+from traceback import print_tb
+import matplotlib.pyplot as plt
 
 start_time = time.time() #time when the program is starting
 
@@ -43,8 +46,8 @@ def process(file_path):
     print(f'Opening input file {file_path}...')
     with open(file_path, 'r') as input_file:
         text = input_file.read()
-    #print(text)
-    print('Done.')
+    print(text)
+    #print('Done.')
     #words = text.split()
     #print('Number of words in text file :', len(words))
     #char='A'
@@ -66,14 +69,21 @@ def process(file_path):
       if c in ascii_dict:
           ascii_dict[c] = ascii_dict[c]+1
 
-    print(ascii_dict)
     
-    for c in ascii_dict.copy():
+    for c in ascii_dict.copy(): #inserisco al dizionario la frequenza delle lettere case insensitive
       if 97 <= ord(c) <=122:
         ascii_dict[f'{c}/{chr(ord(c)-32)}']=ascii_dict[c]+ascii_dict[chr(ord(c)-32)]
 
     print(ascii_dict)
-    
+    return ascii_dict
+
+def histo(dict):
+    plt.bar(list(dict.keys()), dict.values(), color='g')
+    plt.xlabel('Letters (case insensitive)')
+    plt.ylabel('Occurences')
+    plt.title('Occurrences of letters in text')
+    plt.show()
+    return
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Print some book statistics')
@@ -81,10 +91,19 @@ if __name__ == '__main__':
     parser.add_argument("--histo", help="show histogram of the frequences", action="store_true")
     args = parser.parse_args()
 
-    process(args.infile)
+    ascii_dict=process(args.infile)
 
     if args.histo:
       print("print histogram")
+
+      letters_dict = ascii_dict
+      
+      for c in range(128):
+        del letters_dict[chr(c)]
+      
+      histo(letters_dict)
+      #print(letters_dict)
+      
 
     elapsed_time = time.time() - start_time
     print(f'Elapsed time: {elapsed_time} seconds') #prints execution time% (time.time() - start_time)
